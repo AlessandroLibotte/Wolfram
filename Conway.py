@@ -6,11 +6,27 @@ import random
 
 class Conway:
     def __init__(self):
+        self.timer = 0
         self.totCells = 100
         self.scale = 5
         self.screen = np.zeros((self.totCells*self.scale, self.totCells*self.scale, 3), np.uint8)
         self.cells = np.zeros((self.totCells, self.totCells, 2), int)
         self.random_start(1000)
+
+    def start(self):
+        while True:
+            self.run()
+
+    def run(self):
+        self.clear_screen()
+        # self..draw_grid()
+        self.print_cells()
+        self.count_neigh()
+        self.update_state()
+        print_timer()
+        cv2.imshow("screen", self.screen)
+        cv2.waitKey(200)
+        self.timer += 200
 
     def random_start(self, cellnum):
         random.seed(time.time())
@@ -63,33 +79,20 @@ class Conway:
                     self.cells[x][y][0] = 1
 
 
+t_start = time.time()
+m = h = 0
+
+
 def print_timer():
-    global timer, s, m, h
-    if timer == 1000:
-        timer = 0
-        s += 1
-    if s == 60:
-        s = 0
+    global t_start, m, h
+    s = int(time.time() - t_start)
+    if s > 59:
         m += 1
-    if m == 60:
-        m = 0
+        t_start = time.time()
+    if m > 59:
         h += 1
     cv2.putText(con.screen, str(h) + ":" + str(m) + ":" + str(s), (0, 25), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
 
 con = Conway()
-timer = 0
-s = 0
-m = 0
-h = 0
-
-while True:
-    con.clear_screen()
-    #con.draw_grid()
-    con.print_cells()
-    con.count_neigh()
-    con.update_state()
-    print_timer()
-    cv2.imshow("screen", con.screen)
-    cv2.waitKey(200)
-    timer += 200
+con.start()
